@@ -116,3 +116,15 @@ class MLP(nn.Module):
         x = self.hidden(x)
         x = x @ self.readout / self.norm
         return x
+    
+class LSTM(nn.Module):
+    def __init__(self, input_size, nn_dim, num_layers=1):
+        super(LSTM, self).__init__()
+        self.lstm = nn.LSTM(input_size, nn_dim, num_layers, batch_first=True)
+        self.fc = nn.Linear(nn_dim, 1)  # Predicting one value (e.g., wind speed)
+
+    def forward(self, x):
+        out, _ = self.lstm(x)
+        out = out[:, -1, :]  # take last time step
+        out = self.fc(out)
+        return out
